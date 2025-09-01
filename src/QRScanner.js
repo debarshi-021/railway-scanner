@@ -1,36 +1,33 @@
-import React, { useState } from "react";
-import QrScanner from "react-qr-scanner";
+import React, { useEffect, useState } from "react";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 export default function QRScanner() {
   const [uid, setUid] = useState("");
 
-  const handleScan = (data) => {
-    if (data) {
-      setUid(data.text);
-    }
-  };
+  useEffect(() => {
+    const scanner = new Html5QrcodeScanner(
+      "reader",
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      false
+    );
 
-  const handleError = (err) => {
-    console.error(err);
-  };
+    scanner.render(
+      (decodedText) => {
+        setUid(decodedText);   // set UID from QR
+        scanner.clear();       // stop scanning after success
+      },
+      (error) => {
+        console.warn(error);
+      }
+    );
+  }, []);
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>Railway UID QR Scanner</h2>
-
-      <QrScanner
-        delay={300}
-        onError={handleError}
-        onScan={handleScan}
-        style={{ width: "300px", margin: "0 auto" }}
-      />
-
+      <div id="reader" style={{ width: "300px", margin: "0 auto" }}></div>
       <div style={{ marginTop: "20px" }}>
-        {uid ? (
-          <h3>Scanned UID: {uid}</h3>
-        ) : (
-          <p>Point camera at QR code...</p>
-        )}
+        {uid ? <h3>Scanned UID: {uid}</h3> : <p>Point camera at QR code...</p>}
       </div>
     </div>
   );
