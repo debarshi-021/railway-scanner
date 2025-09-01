@@ -1,20 +1,27 @@
 import React, { useState } from "react";
-import { QrReader } from "react-qr-reader";
+import QrScanner from "react-qr-scanner";
 
 export default function QRScanner() {
   const [uid, setUid] = useState("");
+
+  const handleScan = (data) => {
+    if (data) {
+      setUid(data.text);
+    }
+  };
+
+  const handleError = (err) => {
+    console.error(err);
+  };
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>Railway UID QR Scanner</h2>
 
-      <QrReader
-        constraints={{ facingMode: "environment" }} // back camera on phone
-        onResult={(result, error) => {
-          if (!!result) {
-            setUid(result?.text); // capture UID from QR
-          }
-        }}
+      <QrScanner
+        delay={300}
+        onError={handleError}
+        onScan={handleScan}
         style={{ width: "300px", margin: "0 auto" }}
       />
 
